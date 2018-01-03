@@ -39,12 +39,12 @@ import base58
 
 __version__ = version.__version__
 
-ABE_APPNAME = "Abe"
+ABE_APPNAME = "FakeCoin"
 ABE_VERSION = __version__
 ABE_URL = 'https://github.com/bitcoin-abe/bitcoin-abe'
 
-COPYRIGHT_YEARS = '2011'
-COPYRIGHT = "Abe developers"
+COPYRIGHT_YEARS = '2018'
+COPYRIGHT = "<>"
 COPYRIGHT_URL = 'https://github.com/bitcoin-abe'
 
 DONATIONS_BTC = '1PWC7PNHL1SgvZaN7xEtygenKjWobWsCuf'
@@ -62,26 +62,62 @@ DEFAULT_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css"
-     href="%(dotdot)s%(STATIC_PATH)sabe.css" />
-    <link rel="shortcut icon" href="%(dotdot)s%(STATIC_PATH)sfavicon.ico" />
-    <title>%(title)s</title>
+	<meta charset="utf-8">
+	<title>%(title)s</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="%(dotdot)s%(STATIC_PATH)scss/normalize.css">
+	<link rel="stylesheet" href="%(dotdot)s%(STATIC_PATH)scss/skeleton.css">
+	<link rel="icon" type="image/png" href="%(dotdot)s%(STATIC_PATH)simages/logo.png">
+	<style type="text/css">
+		* {
+			font-family: Helvetica Neue, Helvetica, Verdana;
+			font-weight: 400; 
+		}
+	</style>
 </head>
 <body>
-    <h1><a href="%(dotdot)s%(HOMEPAGE)s"><img
-     src="%(dotdot)s%(STATIC_PATH)slogo32.png" alt="Abe logo" /></a> %(h1)s
-    </h1>
-    %(body)s
-    <p><a href="%(dotdot)sq">API</a> (machine-readable pages)</p>
-    <p style="font-size: smaller">
-        <span style="font-style: italic">
-            Powered by <a href="%(ABE_URL)s">%(APPNAME)s</a>
-        </span>
-        %(download)s
-        Tips appreciated!
-        <a href="%(dotdot)saddress/%(DONATIONS_BTC)s">BTC</a>
-        <a href="%(dotdot)saddress/%(DONATIONS_NMC)s">NMC</a>
-    </p>
+	<div class="container">
+		<div class="row">
+			<div class="columns" style="margin-top: 5%%; text-align:center">
+				<a href="%(dotdot)s%(HOMEPAGE)s">
+					<img src="%(dotdot)s%(STATIC_PATH)simages/logo.jpg" alt="FakeCoin logo" height="128" />
+				</a>
+				<br />
+				<h1>FakeCoin</h1>
+				<h5>Unofficial <sub style="font-size:14px;">(but still totally real)</sub> Block Explorer</h5>
+			</div>
+		</div>
+		<div class="row">
+			<div class="columns">%(body)s</div>
+		</div>
+		<div class="row">
+			<div class="columns" style="text-align: center; font-size: 11px;">
+				<br />
+				<span>FAK: tT5MoHWTQrwNmtUXf8PTASFoSk7eMGthKw</span>
+				<br />
+				<!-- *cough* *cough*
+					BTC: 1MvDF51GqmFuwGEV1Bdz8mz1qgojaXBDAF
+					ETH: 0x0735e4715477aE0b8aD7647A8048A09A5d91fBBc
+					LTC: LagV7V77yNaZBpZPax514GjDB3BuDTonnC
+				oh, how did these get here -->
+				<br />
+				<span>
+					&lt;
+					<a href="https://twitter.com/FakeCoin_qt">Twitter</a>
+					&middot;
+					<a href="https://www.reddit.com/r/FakeCoin">Reddit</a>
+					&middot;
+					<a href="https://github.com/Scyne/FakeCoin/releases/tag/v0.8.5.1-unk-beta">Desktop Client</a>
+					&middot;
+					<a href="%(dotdot)sq">API</a>
+					&gt;
+				</span>
+				<br />
+				<span>&lt; &copy; %(COPYRIGHT_YEARS)s &gt;</span>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
 """
@@ -289,8 +325,32 @@ class Abe:
     def handle_chains(abe, page):
         page['title'] = ABE_APPNAME + ' Search'
         body = page['body']
+        
+        body += '<div class="row">'
+
+        from datetime import datetime, timedelta
+
+        import binascii, humanize
+        for block in abe.recent_blocks(page):
+            # block_hash, block_height, block_nTime, block_num_tx, block_value_out, block_total_seconds, block_total_satoshis
+            hashex = binascii.b2a_hex(block[0])
+            body += [
+                """
+                <div class="four columns" style="text-align:center; border: solid #eee 3px; border-radius: 10px 0px 0px 10px; padding: 2px;">
+                """
+                '<div style="background-color:#A6B1C1; border-radius: 10px 0px 0px 10px;"><b>', block[1], '</b></div>'
+                '<div># <a href="https://fakecoin.locale.link/block/', hashex, '">', hashex[:HASH_PREFIX_MIN], '</a></div>'
+                '<div>', humanize.naturaltime(timedelta(seconds=time.time() - EPOCH1970- block[2])), '</div>'
+                '<div>', block[4] / 100000000, ' FAK</div>'
+                '<div>', block[3], ' Tx</div>'
+                """
+                </div>
+                """
+            ]
+            
+        body += '</div>'
+                
         body += [
-            abe.search_form(page),
             '<table>\n',
             '<tr><th>Currency</th><th>Code</th><th>Block</th><th>Time</th>',
             '<th>Started</th><th>Age (days)</th><th>Coins Created</th>',
@@ -362,6 +422,9 @@ class Abe:
 
             body += ['</tr>\n']
         body += ['</table>\n']
+
+        body += abe.search_form(page)
+
         if len(rows) == 0:
             body += ['<p>No block data found.</p>\n']
 
@@ -919,16 +982,52 @@ class Abe:
                      '</td></tr>\n']
         body += ['</table>\n']
 
+    def recent_blocks(abe, page):
+        chain = abe.chain_lookup_by_name("FakeCoin")
+
+        ret = abe.store.selectall("""
+            SELECT b.block_hash, b.block_height, b.block_nTime, b.block_num_tx,
+                   b.block_value_out,
+                   b.block_total_seconds,
+                   b.block_total_satoshis
+              FROM block b
+              JOIN chain_candidate cc ON (b.block_id = cc.block_id)
+             WHERE cc.chain_id = ?
+               AND cc.in_longest = 1
+             ORDER BY cc.block_height DESC LIMIT ?
+        """, (chain.id, 3))
+        ret.reverse()
+        return ret
+        
+        
     def search_form(abe, page):
         q = (page['params'].get('q') or [''])[0]
         return [
-            '<p>Search by address, block number or hash, transaction or'
-            ' public key hash, or chain name:</p>\n'
-            '<form action="', page['dotdot'], 'search"><p>\n'
-            '<input name="q" size="64" value="', escape(q), '" />'
-            '<button type="submit">Search</button>\n'
-            '<br />Address or hash search requires at least the first ',
-            HASH_PREFIX_MIN, ' characters.</p></form>\n']
+            '<p>Search by address, block number or hash, transaction or public key hash, or chain name:</p>\n'
+            '<form action="', page['dotdot'], 'search">'
+            """
+            <div class="row">
+                <div class="nine columns">
+            """
+            '<input class="u-full-width" name="q" value="', escape(q), '" placeholder="tJuzakQNSa4TdK8CAkSicWS7d25kYBja6F" type="text" />'
+            """
+                </div>
+                <div class="three columns">
+                    <input class="u-full-width" value="Search" type="submit">
+                </div>
+            </div>
+            <div class="row">
+                <div class="columns">
+                    <span> Address or hash search requires at least the first 
+            """,
+            HASH_PREFIX_MIN,
+            """
+                        characters.
+                    </span>
+                </div>
+            </div>
+            """
+            '</form>']
 
     def handle_search(abe, page):
         page['title'] = 'Search'
@@ -1740,8 +1839,7 @@ class Abe:
         else:
             full = base + link
 
-        return ['<p class="shortlink">Short Link: <a href="',
-                page['dotdot'], link, '">', full, '</a></p>\n']
+        return ['<p class="shortlink">Short Link: <a href="', full, '">', full, '</a></p>\n']
 
     def fix_path_info(abe, env):
         ret = True
@@ -1870,8 +1968,12 @@ def flatten(l):
         return l
     return str(l)
 
+from urlparse import urlparse, urlunsplit
 def redirect(page):
-    uri = wsgiref.util.request_uri(page['env'])
+    ## TODO TODO TODO:
+    
+    uri = wsgiref.util.request_uri(page['env']).replace("127.0.0.1:2750", "fakecoin.locale.link")
+    
     page['start_response'](
         '301 Moved Permanently',
         [('Location', uri),
