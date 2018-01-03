@@ -104,11 +104,13 @@ DEFAULT_TEMPLATE = """
 				<br />
 				<span>
 					&lt;
+					<a href="/about">About</a>
+					&middot;
 					<a href="https://twitter.com/FakeCoin_qt">Twitter</a>
 					&middot;
 					<a href="https://www.reddit.com/r/FakeCoin">Reddit</a>
 					&middot;
-					<a href="https://github.com/Scyne/FakeCoin/releases/tag/v0.8.5.1-unk-beta">Desktop Client</a>
+					<a href="https://github.com/Scyne/FakeCoin/releases">Desktop Client</a>
 					&middot;
 					<a href="%(dotdot)sq">API</a>
 					&gt;
