@@ -521,6 +521,11 @@ class Abe:
             hi = int(rows[0][1])
         basename = os.path.basename(page['env']['PATH_INFO'])
 
+        body += [
+            '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>',
+            '<p><div id="chart_div"></div></p>',
+        ]
+
         nav = ['<a href="',
                basename, '?count=', str(count), '">&lt;&lt;</a>']
         nav += [' <a href="', basename, '?hi=', str(hi + count),
@@ -548,6 +553,7 @@ class Abe:
 
         extra = False
         #extra = True
+        diffchart = []
         body += ['<p>', nav, '</p>\n',
                  '<table><tr><th>Block</th><th>Approx. Time</th>',
                  '<th>Transactions</th><th>Value Out</th>',
@@ -579,7 +585,11 @@ class Abe:
                 percent_destroyed = '&nbsp;'
             else:
                 percent_destroyed = '%5g%%' % (100.0 - (100.0 * ss / total_ss))
-
+                
+                sTime = format_time(int(nTime))
+                sBits = util.calculate_difficulty(int(nBits))
+                diffchart.append([int(height), sBits])
+                
             body += [
                 '<tr><td><a href="', page['dotdot'], 'block/',
                 abe.store.hashout_hex(hash),
@@ -597,6 +607,29 @@ class Abe:
                 '</td></tr>\n']
 
         body += ['</table>\n<p>', nav, '</p>\n']
+        body += ['<script type="text/javascript">//<![CDATA[\n',
+                 'google.charts.load("current", {packages: ["corechart", "line"]});\n',
+                 'google.charts.setOnLoadCallback(drawBasic);\n',
+
+                 'function drawBasic() {\n',
+                 '      var data = new google.visualization.DataTable();\n',
+                 '      data.addColumn("number", "Height");\n',
+                 '      data.addColumn("number", "Diff");\n',
+                 '      data.addRows(' + str(diffchart) + ');\n',
+                 '      var options = {\n',
+                 '        legend: "none",\n',
+                 '        hAxis: {\n',
+                 '          title: "Height"\n',
+                 '        },\n',
+                 '        vAxis: {\n',
+                 '          title: "Difficulty"\n',
+                 '        }\n',
+                 '      };\n',
+                 '      var chart = new google.visualization.LineChart(document.getElementById("chart_div"));\n',
+                 '      chart.draw(data, options);\n',
+                 '    }\n',
+                 '//]]>\n',
+                 '</script>']
 
     def _show_block(abe, page, dotdotblock, chain, **kwargs):
         body = page['body']
