@@ -22,9 +22,10 @@ class FakeCoin(BaseChain):
     def __init__(chain, **kwargs):
         chain.name = 'FakeCoin'
         chain.code3 = 'FAK'
-        chain.script_addr_vers = "\x7F"
         chain.address_version = "\x7F"
+        chain.script_addr_vers = "\x7D"
         chain.magic = "\xFB\xC0\xB6\xDB"
+        chain.decimals = 8
         BaseChain.__init__(chain, **kwargs)
 
     datadir_conf_file_name = "fakecoin.conf"
