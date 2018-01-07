@@ -553,7 +553,7 @@ class Abe:
 
         extra = False
         #extra = True
-        diffchart = []
+        chartdata = []
         body += ['<p>', nav, '</p>\n',
                  '<table><tr><th>Block</th><th>Approx. Time</th>',
                  '<th>Transactions</th><th>Value Out</th>',
@@ -588,8 +588,9 @@ class Abe:
                 
                 sTime = format_time(int(nTime))
                 sBits = util.calculate_difficulty(int(nBits))
-                diffchart.append([int(height), sBits])
-                
+            
+            chartdata.append([int(height), value_out, sBits])
+            
             body += [
                 '<tr><td><a href="', page['dotdot'], 'block/',
                 abe.store.hashout_hex(hash),
@@ -613,16 +614,21 @@ class Abe:
 
                  'function drawBasic() {\n',
                  '      var data = new google.visualization.DataTable();\n',
-                 '      data.addColumn("number", "Height");\n',
-                 '      data.addColumn("number", "Diff");\n',
-                 '      data.addRows(' + str(diffchart) + ');\n',
+                 '      data.addColumn("number", "Block Height");\n',
+                 '      data.addColumn("number", "Value");\n',
+                 '      data.addColumn("number", "Difficulty");\n',
+                 '      data.addRows(' + str(chartdata) + ');\n',
                  '      var options = {\n',
-                 '        legend: "none",\n',
-                 '        hAxis: {\n',
-                 '          title: "Height"\n',
+                 '        series: {\n'
+                 '          0: {axis: "Value"},\n'
+                 '          1: {axis: "Difficulty"},\n'
                  '        },\n',
-                 '        vAxis: {\n',
-                 '          title: "Difficulty"\n',
+                 '        axis: {\n',
+                 '          x: { 0: { side: "top" } },\n'
+                 '          y: {\n'
+                 '            Value: {label: "Value (FAK)"},\n'
+                 '            Difficulty: {label: "Diff"}\n'
+                 '          }\n'
                  '        }\n',
                  '      };\n',
                  '      var chart = new google.visualization.LineChart(document.getElementById("chart_div"));\n',
