@@ -614,25 +614,24 @@ class Abe:
 
                  'function drawBasic() {\n',
                  '      var data = new google.visualization.DataTable();\n',
-                 '      data.addColumn("number", "Block Height");\n',
+                 '      data.addColumn("number", "Height");\n',
                  '      data.addColumn("number", "Value");\n',
                  '      data.addColumn("number", "Difficulty");\n',
                  '      data.addRows(' + str(chartdata) + ');\n',
                  '      var options = {\n',
                  '        series: {\n'
-                 '          0: {axis: "Value"},\n'
-                 '          1: {axis: "Difficulty"},\n'
+                 '          0: {targetAxisIndex: 0},\n'
+                 '          1: {targetAxisIndex: 1}\n'
                  '        },\n',
-                 '        axis: {\n',
-                 '          x: { 0: { side: "top" } },\n'
+                 '        vAxes: {\n',
                  '          y: {\n'
-                 '            Value: {label: "Value (FAK)"},\n'
-                 '            Difficulty: {label: "Diff"}\n'
+                 '            0: {title: "Value (FAK)"},\n'
+                 '            1: {title: "Difficulty"}\n'
                  '          }\n'
                  '        }\n',
                  '      };\n',
-                 '      var chart = new google.visualization.LineChart(document.getElementById("chart_div"));\n',
-                 '      chart.draw(data, options);\n',
+                 '      var chart = new google.charts.Line(document.getElementById("chart_div"));\n',
+                 '      chart.draw(data, google.charts.Line.convertOptions(options));\n',
                  '    }\n',
                  '//]]>\n',
                  '</script>']
