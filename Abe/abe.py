@@ -589,7 +589,7 @@ class Abe:
                 sTime = format_time(int(nTime))
                 sBits = util.calculate_difficulty(int(nBits))
             
-            chartdata.append([int(height), value_out, sBits])
+            chartdata.append([int(height), value_out/100000000, sBits])
             
             body += [
                 '<tr><td><a href="', page['dotdot'], 'block/',
