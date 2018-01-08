@@ -341,7 +341,7 @@ class Abe:
                 <div class="four columns" style="text-align:center; border: solid #eee 3px; border-radius: 10px 0px 0px 10px; padding: 2px;">
                 """
                 '<div style="background-color:#A6B1C1; border-radius: 10px 0px 0px 10px;"><b>', block[1], '</b></div>'
-                '<div># <a href="https://fakecoin.locale.link/block/', hashex, '">', hashex[:HASH_PREFIX_MIN], '</a></div>'
+                '<div># <a href="https://explorer.fakco.in/block/', hashex, '">', hashex[:HASH_PREFIX_MIN], '</a></div>'
                 '<div>', humanize.naturaltime(timedelta(seconds=time.time() - EPOCH1970- block[2])), '</div>'
                 '<div>', block[4] / 100000000, ' FAK</div>'
                 '<div>', block[3], ' Tx</div>'
@@ -2012,7 +2012,7 @@ from urlparse import urlparse, urlunsplit
 def redirect(page):
     ## TODO TODO TODO:
     
-    uri = wsgiref.util.request_uri(page['env']).replace("127.0.0.1:2750", "fakecoin.locale.link")
+    uri = wsgiref.util.request_uri(page['env']).replace("127.0.0.1:2750", "explorer.fakco.in")
     
     page['start_response'](
         '301 Moved Permanently',
