@@ -24,7 +24,7 @@ class FakeCoin(BaseChain):
         chain.code3 = 'FAK'
         chain.address_version = "\x7F"
         chain.script_addr_vers = "\x7D"
-        chain.magic = "\xFB\xC0\xB6\xDB"
+        chain.magic = "\x3C\xD1\xAF\x3E"
         chain.decimals = 8
         BaseChain.__init__(chain, **kwargs)
 
